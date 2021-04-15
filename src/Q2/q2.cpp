@@ -21,7 +21,7 @@ struct dist
     float cost;   // Total cost to arrive at this node
     int nodeFrom; // What node did it come from?
 };
-string getPath(dist distArray[], int node);
+string getPath(dist[], int);
 
 main()
 {
