@@ -37,17 +37,16 @@ public:
     void add(int value)
     {
         cout << "-- ADD (" << value << ") --" << endl;
-
         // Check if value is between 0 and N
-        if (value > N || value < 0)
+        if (value < 0 || value > N)
         {
-            cout << "[!] VALUE OUT OF BOUNDS: Value " << value << " is not between 0 and " << N << "." << endl;
+            cout << "[!] VALUE OUT OF BOUNDS: (" << value << ") is not between 0 and " << N << "." << endl;
             return;
         }
         //Check value is not already in the list
         if (lookup[value] != -1)
         {
-            cout << "[!] DUPLICATE: Value " << value << " is already a member of the list." << endl;
+            cout << "[!] DUPLICATE: (" << value << ") is already a member of the list." << endl;
             return;
         }
         cout << "Adding..." << endl;
@@ -56,7 +55,9 @@ public:
         list.insert(list.end(), value);
         // Add value to the lookup map
         // O(1)
-        lookup[list[value]] = listSize;
+        lookup[list[listSize]] = listSize;
+        // Increment the list size
+        listSize++;
     }
     /* Delete method */
     /* Exists method */
@@ -113,9 +114,9 @@ public:
 int main()
 {
     myStructure obj1({1, 4, 2}, 10);
+    obj1.add(5);
+    obj1.add(0);
+    obj1.add(0);
     obj1.print();
-    // obj1.add(4);
-    // obj1.add(5);
-    // obj1.print();
     return 0;
 }
