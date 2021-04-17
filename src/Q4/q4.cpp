@@ -3,53 +3,87 @@
 #include <iostream>
 #include <vector>
 using namespace std;
-#define N 10 // Maximum integer
-
-void printList(vector<int>, int[N]);
-void clear(vector<int>, int[N]);
 
 class myStructure
 {
 private:
-    int const NN = 10;
-    int lookup[N];
+    int N, listSize;
+    vector<int> lookup;
     vector<int> list;
 
 public:
     /* Constructor */
-    myStructure(vector<int> inputList)
+    myStructure(vector<int> inputList, int inputN)
     {
+        // Set the N value
+        N = inputN;
+        // Set lookup map to size N
+        lookup.resize(N);
         // Set the list to the input list
         list = inputList;
+        // Set the list size
+        listSize = list.size();
         // Initialise lookup map with -1s
-        fill_n(lookup, N, -1);
-        // Initialise the lookup map
-        for (int i = 0; i < list.size(); i++)
+        for (int i = 0; i < N; i++)
+        {
+            lookup[i] = -1;
+        }
+        // Initialise the lookup map with values from list
+        for (int i = 0; i < listSize; i++)
         {
             lookup[list[i]] = i;
         }
     }
+    /* Add method */
+    void add(int value)
+    {
+        cout << "-- ADD (" << value << ") --" << endl;
+
+        // Check if value is between 0 and N
+        if (value > N)
+        {
+            return;
+        }
+        //Check value is not already in the list
+        if (lookup[value] != -1)
+        {
+            cout << "[!] DUPLICATE: Value " << value << " is already a member of the list." << endl;
+            return;
+        }
+        cout << "Adding..." << endl;
+        // Add value to the end of the list
+        // O(1)
+        list.insert(list.end(), value);
+        // Add value to the lookup map
+        // O(1)
+        lookup[list[value]] = listSize;
+    }
+    /* Delete method */
+    /* Exists method */
+    /* Iterate method */
+
     /* Clear method */
     void clear()
     {
         cout << "-- CLEAR LIST --" << endl;
         // Set the list values in our map to -1
         // O(K) where K is size of list
-        for (int i = 0; i < list.size(); i++)
+        for (int i = 0; i < listSize; i++)
         {
             lookup[list[i]] = -1;
         }
         // O(K) where k is size of the list
         list.clear();
+        listSize = 0;
     }
     /* Printing out the list and lookup map*/
     void print()
     {
         // List printing
         cout << "list: {";
-        for (int i = 0; i < list.size(); i++)
+        for (int i = 0; i < listSize; i++)
         {
-            if (i == list.size() - 1)
+            if (i == listSize - 1)
             {
                 cout << list[i];
             }
@@ -78,9 +112,6 @@ public:
 
 int main()
 {
-    myStructure obj1({1, 4, 2});
-    obj1.print();
-    obj1.clear();
-    obj1.print();
+    myStructure obj1({1, 4, 2}, 10);
     return 0;
 }
