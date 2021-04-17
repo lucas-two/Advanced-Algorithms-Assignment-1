@@ -96,8 +96,7 @@ public:
     void iterate()
     {
         cout << "-- ITERATE LIST --" << endl;
-        // O(N)
-        // NOTE: I'm unsure how to make iterating O(1)
+        // O(1) per iteration
         cout << "list: {";
         for (int i = 0; i < listSize; i++)
         {
