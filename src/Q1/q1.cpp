@@ -15,7 +15,45 @@ struct line
 {
     point p1, p2;
 };
+
+class bst
+{
+private:
+    struct node
+    {
+        line data;
+        node *left;
+        node *right;
+    };
+
+    node *root; // Our root node
+
+    void addLeafPrivate(line data, node *Ptr)
+    {
+    }
+
+public:
+    bst() // Constructor
+    {
+        root = NULL;
+    }
+
+    node *createLeaf(line data)
+    {
+        node *n = new node;
+        n->data = data;
+        n->left = NULL;
+        n->right = NULL;
+        return n;
+    }
+    void addLeaf(line data)
+    {
+        addLeafPrivate(data, root);
+    }
+};
+
 int compare(const void *, const void *);
+int lineType(line);
 void displayLines(line[]);
 
 main()
@@ -64,10 +102,23 @@ main()
     lines[7].p2.y = 3;
 
     // 1. Sort the lines based on the X-coordinate
+    // N log N (apparently)
     displayLines(lines);
     qsort(lines, LINE_COUNT, sizeof(line), compare);
     cout << "* QUICK SORT *" << endl;
     displayLines(lines);
+    // 2. Binary search tree
+    for (int i = 0; i < LINE_COUNT; i++)
+    {
+        if (lineType(lines[i]))
+        {
+            cout << "Verticle" << endl;
+        }
+        else
+        {
+            cout << "Horizontal" << endl;
+        }
+    }
 }
 
 int compare(const void *a, const void *b)
@@ -85,6 +136,18 @@ int compare(const void *a, const void *b)
     }
     return 0;
 };
+
+int lineType(line a)
+/* Tell us if the line his Horizontal or Verticle */
+{
+    // If the line has same X-axis -> Verticle
+    if (a.p1.x == a.p2.x)
+    {
+        return 1;
+    }
+    // Otherwise -> Horizontal
+    return 0;
+}
 
 void displayLines(line arr[])
 {
