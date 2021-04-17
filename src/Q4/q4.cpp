@@ -13,10 +13,7 @@ class myStructure
 private:
     int const NN = 10;
     int lookup[N];
-
     vector<int> list;
-    // Initialise lookup with -1s
-    fill_n(lookup, N, -1);
 
 public:
     /* Constructor */
@@ -24,6 +21,8 @@ public:
     {
         // Set the list to the input list
         list = inputList;
+        // Initialise lookup map with -1s
+        fill_n(lookup, N, -1);
         // Initialise the lookup map
         for (int i = 0; i < list.size(); i++)
         {
@@ -33,6 +32,7 @@ public:
     /* Clear method */
     void clear()
     {
+        cout << "-- CLEAR LIST --" << endl;
         // Set the list values in our map to -1
         // O(K) where K is size of list
         for (int i = 0; i < list.size(); i++)
@@ -46,17 +46,31 @@ public:
     void print()
     {
         // List printing
-        cout << "list: {  ";
+        cout << "list: {";
         for (int i = 0; i < list.size(); i++)
         {
-            cout << list[i] << "  ";
+            if (i == list.size() - 1)
+            {
+                cout << list[i];
+            }
+            else
+            {
+                cout << list[i] << ", ";
+            }
         }
         cout << "}" << endl;
-        // Map printing
-        cout << "map: {  ";
+        // Lookup map printing
+        cout << "lookup: {";
         for (int i = 0; i < N; i++)
         {
-            cout << lookup[i] << "  ";
+            if (i == N - 1)
+            {
+                cout << lookup[i];
+            }
+            else
+            {
+                cout << lookup[i] << ", ";
+            }
         }
         cout << "}" << endl;
     }
@@ -64,23 +78,9 @@ public:
 
 int main()
 {
-    vector<int> valueList{1, 4, 2};
     myStructure obj1({1, 4, 2});
-
-    // vector<int> valueList{1, 4, 2}; // valueList with values between 0->N with no duplicates
-    int lookup[N]; // Maps between valueList items and its accosciated index
-
-    // Initialise lookup with -1s
-    fill_n(lookup, N, -1);
-
-    // Load valueList into our lookup map
-    for (int i = 0; i < valueList.size(); i++)
-    {
-        lookup[valueList[i]] = i;
-    }
-    printList(valueList, lookup);
-    clear(valueList, lookup);
-    printList(valueList, lookup);
-
-    // clear(valueList, lookup);
+    obj1.print();
+    obj1.clear();
+    obj1.print();
+    return 0;
 }
