@@ -8,8 +8,7 @@ class myStructure
 {
 private:
     int N, listSize;
-    vector<int> lookup;
-    vector<int> list;
+    vector<int> lookup, list;
 
 public:
     /* Constructor */
@@ -17,14 +16,14 @@ public:
     {
         // Set the N value
         N = inputN;
-        // Set lookup map to size N
-        lookup.resize(N);
+        // Set lookup map to size N + 1
+        lookup.resize(N + 1);
         // Set the list to the input list
         list = inputList;
         // Set the list size
         listSize = list.size();
         // Initialise lookup map with -1s
-        for (int i = 0; i < N; i++)
+        for (int i = 0; i <= N; i++)
         {
             lookup[i] = -1;
         }
@@ -40,8 +39,9 @@ public:
         cout << "-- ADD (" << value << ") --" << endl;
 
         // Check if value is between 0 and N
-        if (value > N)
+        if (value > N || value < 0)
         {
+            cout << "[!] VALUE OUT OF BOUNDS: Value " << value << " is not between 0 and " << N << "." << endl;
             return;
         }
         //Check value is not already in the list
@@ -95,9 +95,9 @@ public:
         cout << "}" << endl;
         // Lookup map printing
         cout << "lookup: {";
-        for (int i = 0; i < N; i++)
+        for (int i = 0; i <= N; i++)
         {
-            if (i == N - 1)
+            if (i == N)
             {
                 cout << lookup[i];
             }
@@ -113,5 +113,9 @@ public:
 int main()
 {
     myStructure obj1({1, 4, 2}, 10);
+    obj1.print();
+    // obj1.add(4);
+    // obj1.add(5);
+    // obj1.print();
     return 0;
 }
