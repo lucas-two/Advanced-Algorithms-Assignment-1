@@ -49,7 +49,6 @@ public:
             cout << "[!] DUPLICATE: (" << value << ") is already a member of the list." << endl;
             return;
         }
-        cout << "Adding..." << endl;
         // Add value to the end of the list
         // O(1)
         list.insert(list.end(), value);
@@ -57,11 +56,62 @@ public:
         // O(1)
         lookup[list[listSize]] = listSize;
         // Increment the list size
-        listSize++;
+        listSize = listSize + 1;
     }
     /* Delete method */
+    void remove(int value)
+    {
+        cout << "-- DELETE (" << value << ") --" << endl;
+        // Make sure the value exists
+        if (exists(value))
+        {
+            // O(1)
+            // Swap element to delete with last element of list (in lookup map)
+            int valueSwappingTo = list[listSize - 1];
+            // Set the element we're deleting to the last element in the list
+            list[lookup[value]] = list[lookup[valueSwappingTo]];
+            // Update the index of the value we swapped to
+            lookup[valueSwappingTo] = lookup[value];
+            // Remove the index of the value we deleted (set to -1)
+            lookup[value] = -1;
+            // Remove the head of the array
+            list.pop_back();
+            // Decrease the list size
+            listSize = listSize - 1;
+        }
+    }
     /* Exists method */
+    bool exists(int value)
+    {
+        // O(1)
+        if (lookup[value] != -1)
+        {
+            cout << "Value (" << value << ") exists." << endl;
+            return true;
+        }
+        cout << "Value (" << value << ") does not exist." << endl;
+        return false;
+    }
     /* Iterate method */
+    void iterate()
+    {
+        cout << "-- ITERATE LIST --" << endl;
+        // O(N)
+        // NOTE: I'm unsure how to make iterating O(1)
+        cout << "list: {";
+        for (int i = 0; i < listSize; i++)
+        {
+            if (i == listSize - 1)
+            {
+                cout << list[i];
+            }
+            else
+            {
+                cout << list[i] << ", ";
+            }
+        }
+        cout << "}" << endl;
+    }
 
     /* Clear method */
     void clear()
@@ -113,10 +163,30 @@ public:
 
 int main()
 {
-    myStructure obj1({1, 4, 2}, 10);
-    obj1.add(5);
-    obj1.add(0);
-    obj1.add(0);
-    obj1.print();
+    myStructure a({1, 4, 3, 9}, 10);
+    a.print();
+
+    a.add(5);
+    a.print();
+    a.add(11);
+    a.add(-3);
+    a.add(5);
+    a.add(8);
+    a.print();
+
+    a.remove(8);
+    a.print();
+    a.remove(8);
+    a.remove(4);
+    a.print();
+
+    a.exists(8);
+    a.exists(5);
+
+    a.iterate();
+
+    a.clear();
+
+    a.print();
     return 0;
 }

@@ -3,6 +3,10 @@
         "vector": "cpp",
         "iostream": "cpp",
         "xstring": "cpp",
-        "xutility": "cpp"
+        "xutility": "cpp",
+        "exception": "cpp",
+        "memory": "cpp",
+        "tuple": "cpp",
+        "utility": "cpp"
     }
 }
