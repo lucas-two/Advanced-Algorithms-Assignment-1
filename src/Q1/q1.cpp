@@ -65,11 +65,9 @@ private:
 
     void insertWithRecursion(line data, node *nodePointer)
     {
-        cout << "Check if empty" << endl;
         // If the tree is empty
         if (treeIsEmpty())
         {
-            cout << "Tree was empty" << endl;
             // Set the passed value as root
             rootPointer = createNewNode(data);
             return;
@@ -78,8 +76,6 @@ private:
         // we're looking at:
         else if (data.p1.y < nodePointer->data.p1.y)
         {
-            cout << "LEFT" << endl;
-
             // If there's something already connected to
             // the left of the node:
             if (nodeExists(nodePointer->left))
@@ -99,13 +95,10 @@ private:
         // we're looking at:
         else if (data.p1.y > nodePointer->data.p1.y)
         {
-            cout << "RIGHT" << endl;
             // If there's something already connected to
             // the right of the node:
-            if (nodeExists(nodePointer))
+            if (nodeExists(nodePointer->right))
             {
-                cout << "Node exists" << endl;
-
                 // Recursively go to the pointer's right child
                 // and use that as the node we're comparing against
                 insertWithRecursion(data, nodePointer->right);
@@ -113,7 +106,6 @@ private:
             // If the right of the node is free:
             else
             {
-                cout << "Node dosen't exist" << endl;
                 // Create the new node for this spot
                 nodePointer->right = createNewNode(data);
             }
@@ -198,11 +190,11 @@ private:
             // If the root node matches what we want to remove:
             if (data.p1.y == rootPointer->data.p1.y)
             {
-                // REMOVE ROOT
+                removeFoundRoot();
             }
             else
             {
-                // If the value should be to the left:
+                // If the value is to the left:
                 if (data.p1.y < nodePointer->data.p1.y)
                 {
                     // And a left node exists
@@ -211,7 +203,8 @@ private:
                         // If we've found a match:
                         if (data.p1.y == nodePointer->left->data.p1.y)
                         {
-                            // REMOVE MATCH (nodePointer, nodePointer->left, true)
+                            // Remove this left child node
+                            removeFoundNode(nodePointer, nodePointer->left, true);
                         }
                         // Otherwise, go and check the node's left children:
                         else
@@ -220,7 +213,7 @@ private:
                         }
                     }
                 }
-                // If the value should be to the right
+                // If the value is to the right:
                 else if (data.p1.y > nodePointer->data.p1.y)
                 {
                     // And a right node exists
@@ -229,7 +222,8 @@ private:
                         // If we've found a match:
                         if (data.p1.y == nodePointer->right->data.p1.y)
                         {
-                            // REMOVE MATCH (nodePointer, nodePointer->right, false)
+                            // Remove this right child node
+                            removeFoundNode(nodePointer, nodePointer->right, false);
                         }
                         // Otherwise, go and check the node's right children:
                         else
@@ -252,38 +246,13 @@ private:
         }
     }
 
-    void chooseSmallestNode()
-    {
-        chooseSmallestNodeWithRecursion(rootPointer);
-    }
-
-    node *chooseSmallestNodeWithRecursion(node *nodePointer)
-    {
-        if (treeIsEmpty())
-        {
-            cout << "Tree is empty." << endl;
-            return NULL;
-        }
-        else
-        {
-            if (nodeExists(nodePointer->left))
-            {
-                return chooseSmallestNodeWithRecursion(nodePointer->left);
-            }
-            else
-            {
-                return nodePointer;
-            }
-        }
-    }
-
     void removeFoundRoot()
     {
         if (!treeIsEmpty())
         {
             node *rootPointerReference = rootPointer;
             line rootPointerData = rootPointer->data;
-            line smallestInRightSubTree;
+            line smallestRightNode;
 
             // If the root node has no children:
             if (!nodeExists(rootPointer->left) && !nodeExists(rootPointer->right))
@@ -317,11 +286,127 @@ private:
             // If the root has 2 children
             else
             {
+                // Find the smallest node in the right sub-tree
+                smallestRightNode = chooseSmallestNodeWithRecursion(rootPointer->right)->data;
+                // Remove this smallest node (that will replace the root)
+                removeWithRecursion(smallestRightNode, rootPointer);
+                // Replace the root with the smallest right node
+                rootPointer->data = smallestRightNode;
             }
         }
         else
         {
             cout << "[!] ROOT CANNOT BE REMOVED: Tree is empty." << endl;
+        }
+    }
+
+    /* Removes the child node*/
+    void removeFoundNode(node *nodePointerParent, node *nodePointerChild, bool childIsOnLeft)
+    {
+        if (!treeIsEmpty())
+        {
+            node *nodePointerReference;
+            line nodePointerToRemoveData = nodePointerChild->data;
+            line smallestRightNode;
+
+            // If the node has no children
+            if (!nodeExists(nodePointerChild->left) && !nodeExists(nodePointerChild->right))
+            {
+                nodePointerReference = nodePointerChild;
+                // If the child is on the left
+                if (childIsOnLeft)
+                {
+                    // Remove the node from it's parent's left
+                    nodePointerParent->left = NULL;
+                }
+                // If the child is on the right
+                else
+                {
+                    // Remove the node from it's parent's right
+                    nodePointerParent->right = NULL;
+                }
+                // Deallocate the memory
+                delete nodePointerReference;
+            }
+            // If the node has 1 child:
+            // -> And it's on the right
+            else if (!nodeExists(nodePointerChild->left) && nodeExists(nodePointerChild->right))
+            {
+                // If the child is on the left
+                if (childIsOnLeft)
+                {
+                    // Link the parent's LEFT with the child's right
+                    nodePointerParent->left = nodePointerChild->right;
+                }
+                else
+                {
+                    // Link the parent's RIGHT with the child's right
+                    nodePointerParent->right = nodePointerChild->right;
+                }
+                // Remove the child node's right reference
+                nodePointerChild->right = NULL;
+                // Deallocate the memory of the removed node
+                nodePointerReference = nodePointerChild;
+                delete nodePointerReference;
+            }
+            // -> And it's on the left
+            else if (nodeExists(nodePointerChild->left) && !nodeExists(nodePointerChild->right))
+            {
+                // If the child is on the left
+                if (childIsOnLeft)
+                {
+                    // Link the parent's LEFT with the child's left
+                    nodePointerParent->left = nodePointerChild->left;
+                }
+                else
+                {
+                    // Link the parent's RIGHT with the child's left
+                    nodePointerParent->right = nodePointerChild->left;
+                }
+                // Remove the child node left reference
+                nodePointerChild->left = NULL;
+                // Deallocate the memory of the removed node
+                nodePointerReference = nodePointerChild;
+                delete nodePointerReference;
+            }
+            // If the node has 2 children
+            else
+            {
+                // Find the child's smallest right node
+                smallestRightNode = chooseSmallestNodeWithRecursion(nodePointerChild->right)->data;
+                // Remove the child node
+                removeWithRecursion(smallestRightNode, nodePointerChild);
+                // Overwrite the node we wanted to delete with the smallest right node
+                nodePointerChild->data = smallestRightNode;
+            }
+        }
+        else
+        {
+            cout << "[!] NODE CANNOT BE REMOVED: Tree is empty.";
+        }
+    }
+
+    node *chooseSmallestNodeWithRecursion(node *nodePointer)
+    {
+        // Return null if the tree is empty
+        if (treeIsEmpty())
+        {
+            cout << "Tree is empty." << endl;
+            return NULL;
+        }
+        else
+        {
+            // If there is a left child:
+            if (nodeExists(nodePointer->left))
+            {
+                // Keep going down that left child
+                return chooseSmallestNodeWithRecursion(nodePointer->left);
+            }
+            else
+            {
+                // We've gone as far as we can and have our smallest node
+                return nodePointer;
+            }
         }
     }
 
@@ -335,7 +420,6 @@ public:
     /* Insert a node into the tree */
     void insert(line data)
     {
-        cout << "-- INSERT called -- " << endl;
         // Inserting the node using a recursive method:
         insertWithRecursion(data, rootPointer);
     }
@@ -350,9 +434,15 @@ public:
     /* Printing the tree (in acending order) */
     void printTree()
     {
-        cout << "-- PRINTING TREE --" << endl;
         // Printing the tree using a recursive method:
         printTreeWithRecursion(rootPointer);
+        cout << endl;
+    }
+
+    /* Select the node that is the farthest to the left*/
+    node *chooseSmallestNode()
+    {
+        return chooseSmallestNodeWithRecursion(rootPointer);
     }
 };
 
@@ -415,14 +505,28 @@ main()
     // 2. Binary search tree
     binarySearchTree bst;
     bst.printTree();
-    bst.insert(lines[0]);
-    bst.insert(lines[1]);
-    // bst.insert(lines[2]);
-    // bst.insert(lines[3]);
-    // bst.insert(lines[4]);
-    // bst.insert(lines[5]);
-    // bst.insert(lines[6]);
-    // bst.insert(lines[7]);
+
+    for (int i = 0; i < LINE_COUNT; i++)
+    {
+        bst.insert(lines[i]);
+        if (lineIsVerticle(lines[i]))
+        {
+            cout << "Verticle" << endl;
+        }
+        else
+        {
+            cout << "Horizontal" << endl;
+        }
+    }
+    bst.printTree();
+
+    cout << "Smallest node: " << bst.chooseSmallestNode()->data.p1.y << endl;
+
+    bst.remove(lines[3]);
+    bst.printTree();
+    bst.remove(lines[1]);
+    bst.printTree();
+    bst.remove(lines[5]);
     bst.printTree();
 }
 
