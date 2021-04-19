@@ -9,7 +9,7 @@ using namespace std;
 
 struct point
 {
-    float x, y;
+    int x, y;
 };
 struct line
 {
@@ -26,6 +26,17 @@ private:
         node *right;
     };
     node *rootPointer; // Our root node
+
+    /* Check if the tree is empty */
+    bool treeIsEmpty()
+    {
+        // Tree will be empty if the root node is NULL
+        if (rootPointer == NULL)
+        {
+            return true;
+        }
+        return false;
+    }
 
     /* Create a new node */
     node *createNewNode(line data)
@@ -44,7 +55,7 @@ private:
     void insertWithRecursion(line data, node *nodePointer)
     {
         // If the tree is empty
-        if (rootPointer == NULL)
+        if (treeIsEmpty())
         {
             // Set the passed value as root
             rootPointer = createNewNode(data);
@@ -88,6 +99,7 @@ private:
                 nodePointer->right = createNewNode(data);
             }
         }
+        // If the values are equal:
         else
         {
             cout << "[!] DUPLICATE VALUE: Not accepting lines that have equal Y axis values." << endl;
@@ -95,7 +107,8 @@ private:
     }
     void printTreeWithRecursion(node *nodePointer)
     {
-        if (rootPointer != NULL)
+        // If the tree is not empty
+        if (!treeIsEmpty())
         {
             // If it's possible to go LEFT:
             if (nodePointer->left != NULL)
@@ -103,33 +116,91 @@ private:
                 // Print the left node's children (recursively)
                 printTreeWithRecursion(nodePointer->left);
             }
+            // Output the value
             cout << nodePointer->data.p1.y << " ";
             // If it's possible to go RIGHT:
-            if (nodePointer->left != NULL)
+            if (nodePointer->right != NULL)
             {
                 // Print the right node's children (recursively)
                 printTreeWithRecursion(nodePointer->right);
             }
         }
+        // Otherwise, if the tree is empty:
         else
         {
             cout << "Tree is empty." << endl;
         }
     }
 
+    node *findNodeWithRecursion(line data, node *nodePointer)
+    {
+        // If our node pointer is pointing to something:
+        if (nodePointer != NULL)
+        {
+            // If the values are equal:
+            if (nodePointer->data.p1.y == data.p1.y)
+            {
+                // Return this as our node
+                return nodePointer;
+            }
+            // Otherwise, recursively look for it...
+            else
+            {
+                // In the LEFT (if the value is less than)
+                if (data.p1.y < nodePointer->data.p1.y)
+                {
+                    return findNodeWithRecursion(data, nodePointer->left);
+                }
+                // In the RIGHT (if the value is greater than)
+                else
+                {
+                    return findNodeWithRecursion(data, nodePointer->right);
+                }
+            }
+        }
+        // If our node pointer isn't pointing to anything -> NULL
+        else
+        {
+            return NULL;
+        }
+    }
+
+    /* Locates a node in the tree */
+    void findNode(line data)
+    {
+        // Finds a node in the tree using a recursive method:
+        findNodeWithRecursion(data, rootPointer);
+    }
+
+    void removeWithRecursion(line data, node *nodePointer)
+    {
+        if (!treeIsEmpty())
+        {
+                }
+    }
+
 public:
     binarySearchTree()
     {
-        rootPointer = NULL; // Initialise tree as empty
+        // Initialise tree as empty
+        rootPointer = NULL;
     }
 
-    /* Insert value into the tree */
+    /* Insert a node into the tree */
     void insert(line data)
     {
         // Inserting the node using a recursive method:
         insertWithRecursion(data, rootPointer);
     }
 
+    /* Remove a node from the tree */
+    void remove(line data)
+    {
+        // Removing the node using a recursive method:
+        removeWithRecursion(data, rootPointer);
+    }
+
+    /* Printing the tree (in acending order) */
     void printTree()
     {
         // Printing the tree using a recursive method:
@@ -199,10 +270,10 @@ main()
 
     for (int i = 0; i < LINE_COUNT; i++)
     {
+        bst.insert(lines[i]);
         if (lineIsVerticle(lines[i]))
         {
             cout << "Verticle" << endl;
-            bst.insert(lines[i]);
         }
         else
         {
