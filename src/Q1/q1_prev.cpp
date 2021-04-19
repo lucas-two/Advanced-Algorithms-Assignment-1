@@ -244,6 +244,78 @@ private:
         }
     }
 
+    void removeFoundRoot()
+    {
+        if (!treeIsEmpty())
+        {
+            node *rootPointerReference = rootPointer;
+            line rootPointerData = rootPointer->data;
+            line smallestInRightSubTree;
+
+            // If the root node has no children:
+            if (!nodeExists(rootPointer->left) && !nodeExists(rootPointer->right))
+            {
+                // Set the root node to null
+                rootPointer = NULL;
+                // Deallocate the pointer reference
+                delete rootPointerReference;
+            }
+            // If the root node has 1 child:
+            // -> And it's on the right
+            else if (!nodeExists(rootPointer->left) && nodeExists(rootPointer->right))
+            {
+                // Set the root node to it's right child
+                rootPointer = rootPointer->right;
+                // Remove the right child node
+                rootPointerReference->right = NULL;
+                // Deallocate the pointer reference
+                delete rootPointerReference;
+            }
+            // -> And it's on the left
+            else if (nodeExists(rootPointer->left) && !nodeExists(rootPointer->right))
+            {
+                // Set the root node to it's right child
+                rootPointer = rootPointer->left;
+                // Remove the right child node
+                rootPointerReference->left = NULL;
+                // Deallocate the pointer reference
+                delete rootPointerReference;
+            }
+            // If the root has 2 children
+            else
+            {
+            }
+        }
+        else
+        {
+            cout << "[!] ROOT CANNOT BE REMOVED: Tree is empty." << endl;
+        }
+    }
+
+    node *chooseSmallestNodeWithRecursion(node *nodePointer)
+    {
+        // Return null if the tree is empty
+        if (treeIsEmpty())
+        {
+            cout << "Tree is empty." << endl;
+            return NULL;
+        }
+        else
+        {
+            // If there is a left child:
+            if (nodeExists(nodePointer->left))
+            {
+                // Keep going down that left child
+                return chooseSmallestNodeWithRecursion(nodePointer->left);
+            }
+            else
+            {
+                // We've gone as far as we can and have our smallest node
+                return nodePointer;
+            }
+        }
+    }
+
 public:
     binarySearchTree()
     {
@@ -270,6 +342,12 @@ public:
     {
         // Printing the tree using a recursive method:
         printTreeWithRecursion(rootPointer);
+    }
+
+    /* Select the node that is the farthest to the left*/
+    node *chooseSmallestNode()
+    {
+        return chooseSmallestNodeWithRecursion(rootPointer);
     }
 };
 
@@ -346,6 +424,8 @@ main()
         }
     }
     bst.printTree();
+
+    cout << "Smallest node: " << bst.chooseSmallestNode()->data.p1.y << endl;
 }
 
 int compare(const void *a, const void *b)
