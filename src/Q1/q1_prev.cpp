@@ -190,11 +190,11 @@ private:
             // If the root node matches what we want to remove:
             if (data.p1.y == rootPointer->data.p1.y)
             {
-                // REMOVE ROOT
+                removeFoundRoot();
             }
             else
             {
-                // If the value should be to the left:
+                // If the value is to the left:
                 if (data.p1.y < nodePointer->data.p1.y)
                 {
                     // And a left node exists
@@ -203,7 +203,8 @@ private:
                         // If we've found a match:
                         if (data.p1.y == nodePointer->left->data.p1.y)
                         {
-                            //removeFoundRoot(); // REMOVE MATCH (nodePointer, nodePointer->left, true)
+                            // Remove this left child node
+                            removeFoundNode(nodePointer, nodePointer->left, true);
                         }
                         // Otherwise, go and check the node's left children:
                         else
@@ -212,7 +213,7 @@ private:
                         }
                     }
                 }
-                // If the value should be to the right
+                // If the value is to the right:
                 else if (data.p1.y > nodePointer->data.p1.y)
                 {
                     // And a right node exists
@@ -221,7 +222,8 @@ private:
                         // If we've found a match:
                         if (data.p1.y == nodePointer->right->data.p1.y)
                         {
-                            // REMOVE MATCH (nodePointer, nodePointer->right, false)
+                            // Remove this right child node
+                            removeFoundNode(nodePointer, nodePointer->right, false);
                         }
                         // Otherwise, go and check the node's right children:
                         else
@@ -434,6 +436,7 @@ public:
     {
         // Printing the tree using a recursive method:
         printTreeWithRecursion(rootPointer);
+        cout << endl;
     }
 
     /* Select the node that is the farthest to the left*/
@@ -518,6 +521,13 @@ main()
     bst.printTree();
 
     cout << "Smallest node: " << bst.chooseSmallestNode()->data.p1.y << endl;
+
+    bst.remove(lines[3]);
+    bst.printTree();
+    bst.remove(lines[1]);
+    bst.printTree();
+    bst.remove(lines[5]);
+    bst.printTree();
 }
 
 int compare(const void *a, const void *b)
