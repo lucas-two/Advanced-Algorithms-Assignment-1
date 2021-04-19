@@ -16,7 +16,7 @@ struct line
     point p1, p2;
 };
 
-class bst
+class binarySearchTree
 {
 private:
     struct node
@@ -25,35 +25,120 @@ private:
         node *left;
         node *right;
     };
+    node *rootPointer; // Our root node
 
-    node *root; // Our root node
-
-    void addLeafPrivate(line data, node *Ptr)
+    /* Create a new node */
+    node *createNewNode(line data)
     {
+        // Allocate memory for a new node
+        node *newNode = new node();
+        // Set it's data to the input data
+        newNode->data = data;
+        // Set it's left and right child as null
+        newNode->left = NULL;
+        newNode->right = NULL;
+        // Return a pointer to the new node
+        return newNode;
+    }
+
+    void insertWithRecursion(line data, node *nodePointer)
+    {
+        // If the tree is empty
+        if (rootPointer == NULL)
+        {
+            // Set the passed value as root
+            rootPointer = createNewNode(data);
+            return;
+        }
+        // If the value should be on the LEFT of the node
+        // we're looking at:
+        else if (data.p1.y < nodePointer->data.p1.y)
+        {
+            // If there's something already connected to
+            // the left of the node:
+            if (nodePointer->left != NULL)
+            {
+                // Recursively go to the pointer's left child
+                // and use that as the node we're comparing against
+                insertWithRecursion(data, nodePointer->left);
+            }
+            // If the left of the node is free:
+            else
+            {
+                // Create the new node for this spot
+                nodePointer->left = createNewNode(data);
+            }
+        }
+        // If the value should be on the RIGHT of the node
+        // we're looking at:
+        else if (data.p1.y > nodePointer->data.p1.y)
+        {
+            // If there's something already connected to
+            // the right of the node:
+            if (nodePointer->right != NULL)
+            {
+                // Recursively go to the pointer's right child
+                // and use that as the node we're comparing against
+                insertWithRecursion(data, nodePointer->right);
+            }
+            // If the right of the node is free:
+            else
+            {
+                // Create the new node for this spot
+                nodePointer->right = createNewNode(data);
+            }
+        }
+        else
+        {
+            cout << "[!] DUPLICATE VALUE: Not accepting lines that have equal Y axis values." << endl;
+        }
+    }
+    void printTreeWithRecursion(node *nodePointer)
+    {
+        if (rootPointer != NULL)
+        {
+            // If it's possible to go LEFT:
+            if (nodePointer->left != NULL)
+            {
+                // Print the left node's children (recursively)
+                printTreeWithRecursion(nodePointer->left);
+            }
+            cout << nodePointer->data.p1.y << " ";
+            // If it's possible to go RIGHT:
+            if (nodePointer->left != NULL)
+            {
+                // Print the right node's children (recursively)
+                printTreeWithRecursion(nodePointer->right);
+            }
+        }
+        else
+        {
+            cout << "Tree is empty." << endl;
+        }
     }
 
 public:
-    bst() // Constructor
+    binarySearchTree()
     {
-        root = NULL;
+        rootPointer = NULL; // Initialise tree as empty
     }
 
-    node *createLeaf(line data)
+    /* Insert value into the tree */
+    void insert(line data)
     {
-        node *n = new node;
-        n->data = data;
-        n->left = NULL;
-        n->right = NULL;
-        return n;
+        // Inserting the node using a recursive method:
+        insertWithRecursion(data, rootPointer);
     }
-    void addLeaf(line data)
+
+    void printTree()
     {
-        addLeafPrivate(data, root);
+        // Printing the tree using a recursive method:
+        printTreeWithRecursion(rootPointer);
     }
 };
 
 int compare(const void *, const void *);
-int lineType(line);
+bool lineIsVerticle(line);
 void displayLines(line[]);
 
 main()
@@ -107,18 +192,24 @@ main()
     qsort(lines, LINE_COUNT, sizeof(line), compare);
     cout << "* QUICK SORT *" << endl;
     displayLines(lines);
+
     // 2. Binary search tree
+    binarySearchTree bst;
+    bst.printTree();
+
     for (int i = 0; i < LINE_COUNT; i++)
     {
-        if (lineType(lines[i]))
+        if (lineIsVerticle(lines[i]))
         {
             cout << "Verticle" << endl;
+            bst.insert(lines[i]);
         }
         else
         {
             cout << "Horizontal" << endl;
         }
     }
+    bst.printTree();
 }
 
 int compare(const void *a, const void *b)
@@ -137,16 +228,16 @@ int compare(const void *a, const void *b)
     return 0;
 };
 
-int lineType(line a)
+bool lineIsVerticle(line a)
 /* Tell us if the line his Horizontal or Verticle */
 {
     // If the line has same X-axis -> Verticle
     if (a.p1.x == a.p2.x)
     {
-        return 1;
+        return true;
     }
     // Otherwise -> Horizontal
-    return 0;
+    return false;
 }
 
 void displayLines(line arr[])
