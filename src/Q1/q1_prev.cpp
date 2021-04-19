@@ -65,11 +65,9 @@ private:
 
     void insertWithRecursion(line data, node *nodePointer)
     {
-        cout << "Check if empty" << endl;
         // If the tree is empty
         if (treeIsEmpty())
         {
-            cout << "Tree was empty" << endl;
             // Set the passed value as root
             rootPointer = createNewNode(data);
             return;
@@ -78,8 +76,6 @@ private:
         // we're looking at:
         else if (data.p1.y < nodePointer->data.p1.y)
         {
-            cout << "LEFT" << endl;
-
             // If there's something already connected to
             // the left of the node:
             if (nodeExists(nodePointer->left))
@@ -99,13 +95,10 @@ private:
         // we're looking at:
         else if (data.p1.y > nodePointer->data.p1.y)
         {
-            cout << "RIGHT" << endl;
             // If there's something already connected to
             // the right of the node:
-            if (nodeExists(nodePointer))
+            if (nodeExists(nodePointer->right))
             {
-                cout << "Node exists" << endl;
-
                 // Recursively go to the pointer's right child
                 // and use that as the node we're comparing against
                 insertWithRecursion(data, nodePointer->right);
@@ -113,7 +106,6 @@ private:
             // If the right of the node is free:
             else
             {
-                cout << "Node dosen't exist" << endl;
                 // Create the new node for this spot
                 nodePointer->right = createNewNode(data);
             }
@@ -252,79 +244,6 @@ private:
         }
     }
 
-    void chooseSmallestNode()
-    {
-        chooseSmallestNodeWithRecursion(rootPointer);
-    }
-
-    node *chooseSmallestNodeWithRecursion(node *nodePointer)
-    {
-        if (treeIsEmpty())
-        {
-            cout << "Tree is empty." << endl;
-            return NULL;
-        }
-        else
-        {
-            if (nodeExists(nodePointer->left))
-            {
-                return chooseSmallestNodeWithRecursion(nodePointer->left);
-            }
-            else
-            {
-                return nodePointer;
-            }
-        }
-    }
-
-    void removeFoundRoot()
-    {
-        if (!treeIsEmpty())
-        {
-            node *rootPointerReference = rootPointer;
-            line rootPointerData = rootPointer->data;
-            line smallestInRightSubTree;
-
-            // If the root node has no children:
-            if (!nodeExists(rootPointer->left) && !nodeExists(rootPointer->right))
-            {
-                // Set the root node to null
-                rootPointer = NULL;
-                // Deallocate the pointer reference
-                delete rootPointerReference;
-            }
-            // If the root node has 1 child:
-            // -> And it's on the right
-            else if (!nodeExists(rootPointer->left) && nodeExists(rootPointer->right))
-            {
-                // Set the root node to it's right child
-                rootPointer = rootPointer->right;
-                // Remove the right child node
-                rootPointerReference->right = NULL;
-                // Deallocate the pointer reference
-                delete rootPointerReference;
-            }
-            // -> And it's on the left
-            else if (nodeExists(rootPointer->left) && !nodeExists(rootPointer->right))
-            {
-                // Set the root node to it's right child
-                rootPointer = rootPointer->left;
-                // Remove the right child node
-                rootPointerReference->left = NULL;
-                // Deallocate the pointer reference
-                delete rootPointerReference;
-            }
-            // If the root has 2 children
-            else
-            {
-            }
-        }
-        else
-        {
-            cout << "[!] ROOT CANNOT BE REMOVED: Tree is empty." << endl;
-        }
-    }
-
 public:
     binarySearchTree()
     {
@@ -335,7 +254,6 @@ public:
     /* Insert a node into the tree */
     void insert(line data)
     {
-        cout << "-- INSERT called -- " << endl;
         // Inserting the node using a recursive method:
         insertWithRecursion(data, rootPointer);
     }
@@ -350,7 +268,6 @@ public:
     /* Printing the tree (in acending order) */
     void printTree()
     {
-        cout << "-- PRINTING TREE --" << endl;
         // Printing the tree using a recursive method:
         printTreeWithRecursion(rootPointer);
     }
@@ -415,14 +332,19 @@ main()
     // 2. Binary search tree
     binarySearchTree bst;
     bst.printTree();
-    bst.insert(lines[0]);
-    bst.insert(lines[1]);
-    // bst.insert(lines[2]);
-    // bst.insert(lines[3]);
-    // bst.insert(lines[4]);
-    // bst.insert(lines[5]);
-    // bst.insert(lines[6]);
-    // bst.insert(lines[7]);
+
+    for (int i = 0; i < LINE_COUNT; i++)
+    {
+        bst.insert(lines[i]);
+        if (lineIsVerticle(lines[i]))
+        {
+            cout << "Verticle" << endl;
+        }
+        else
+        {
+            cout << "Horizontal" << endl;
+        }
+    }
     bst.printTree();
 }
 
