@@ -1,8 +1,5 @@
 /* Q1. Sweep Line Algorithm */
-// PROBLEM: Orthogonal Line Intersection Search
-// Brute force is O(N^2) but we must design O(nlogn)
-// We have N lines, they are only vertical or horizontal.
-// Derive the efficency of our algorithm.
+
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -487,16 +484,14 @@ public:
     }
 
     /* Find nodes within Y range*/
-    void rangeSearch(int lowY, int highY)
+    void rangeSearch(int lowerBound, int upperBound)
     {
-        rangeSearchWithRecursion(rootPointer, lowY, highY);
+        rangeSearchWithRecursion(rootPointer, lowerBound, upperBound);
     }
 };
 
-int compare(const void *, const void *);
 bool compareMethod(point, point);
 bool lineIsVerticle(line);
-void displayLines(line[]);
 
 main()
 {
@@ -535,36 +530,36 @@ main()
     lines[3].p2.parentLineId = 3;
     lines[3].p2.isFirstPoint = false;
     lines[3].p1.x = 5;
-    lines[3].p1.y = 6;
+    lines[3].p1.y = 3;
     lines[3].p2.x = 5;
-    lines[3].p2.y = 3;
+    lines[3].p2.y = 6;
     // L5
     lines[4].id = 4;
     lines[4].p1.parentLineId = 4;
     lines[4].p2.parentLineId = 4;
     lines[4].p2.isFirstPoint = false;
     lines[4].p1.x = 6;
-    lines[4].p1.y = 2;
+    lines[4].p1.y = 0;
     lines[4].p2.x = 6;
-    lines[4].p2.y = 0;
+    lines[4].p2.y = 2;
     // L6
     lines[5].id = 5;
     lines[5].p1.parentLineId = 5;
     lines[5].p2.parentLineId = 5;
     lines[5].p2.isFirstPoint = false;
     lines[5].p1.x = 7;
-    lines[5].p1.y = 5;
+    lines[5].p1.y = 3;
     lines[5].p2.x = 7;
-    lines[5].p2.y = 3;
+    lines[5].p2.y = 5;
     // L7
     lines[6].id = 6;
     lines[6].p1.parentLineId = 6;
     lines[6].p2.parentLineId = 6;
     lines[6].p2.isFirstPoint = false;
     lines[6].p1.x = 10;
-    lines[6].p1.y = 6;
+    lines[6].p1.y = 1;
     lines[6].p2.x = 10;
-    lines[6].p2.y = 1;
+    lines[6].p2.y = 7;
     // L8
     lines[7].id = 7;
     lines[7].p1.parentLineId = 7;
@@ -593,44 +588,35 @@ main()
             pointsPQ.insert(pointsPQ.end(), lines[i].p2);
         }
     }
+    // Using stable_sort to sort the PQ
+    // It's O(N log N) (reference: https://www.cplusplus.com/reference/algorithm/stable_sort/)
+    stable_sort(pointsPQ.begin(), pointsPQ.end(), compareMethod);
+
+    // Display points
     cout << "Points: ";
     for (int i = 0; i < pointsPQ.size(); i++)
     {
-        cout << pointsPQ[i].x << ", ";
+        cout << pointsPQ[i].x << "  ";
     }
     cout << endl;
-    // According to c++ reference, it's O(N log N)
-    // (https://www.cplusplus.com/reference/algorithm/stable_sort/)
-    stable_sort(pointsPQ.begin(), pointsPQ.end(), compareMethod);
 
-    bst.insert(lines[0]);
-    bst.insert(lines[1]);
-    bst.insert(lines[2]);
-    bst.insert(lines[3]);
-    bst.insert(lines[4]);
-    bst.insert(lines[5]);
-    bst.insert(lines[6]);
-    bst.insert(lines[7]);
-    bst.printTree();
-    bst.rangeSearch(3, 4);
-    bst.printIntersections();
-    /*
     // Sweep over the points
     for (int i = 0; i < pointsPQ.size(); i++)
     {
         // If we hit a verticle line
         if (lineIsVerticle(lines[pointsPQ[i].parentLineId]))
         {
-            // Do a range search
-            // from the lines p1.y -> p2.y
-            // check if there are any BST values that fall into that.
-            // (the values that do are intersection lines!)
-            // number of intersections++
+            cout << "*!* Hit verticle line" << endl;
+            cout << "RANGE: " << endl
+                 << "Lower bound: " << lines[pointsPQ[i].parentLineId].p1.y << endl
+                 << "Upper bound: " << lines[pointsPQ[i].parentLineId].p2.y << endl;
+            bst.rangeSearch(lines[pointsPQ[i].parentLineId].p1.y, lines[pointsPQ[i].parentLineId].p2.y);
         }
 
         // If it's the first point of the line
         else if (pointsPQ[i].isFirstPoint)
         {
+            cout << "*!* Inserting first point of line" << endl;
             // Insert it's line into our BST
             bst.insert(lines[pointsPQ[i].parentLineId]);
             bst.printTree();
@@ -638,49 +624,14 @@ main()
         // If it's the end point of the line
         else
         {
+            cout << "*!* Removing last point of line" << endl;
+
             // Remove the line from our BST
             bst.remove(lines[pointsPQ[i].parentLineId]);
         }
     }
-    */
-    // bst.rangeSearch(1, 3);
-
-    // cout << "RANGE SEARCH: " << bst.rangeSearch(1, 3) << endl;
-
-    // ----
-
-    // // 1. Sort the lines based on the X-coordinate
-    // // N log N (apparently)
-    // displayLines(lines);
-    // qsort(lines, LINE_COUNT, sizeof(line), compare);
-    // cout << "* QUICK SORT *" << endl;
-    // displayLines(lines);
-
-    // // 2. Binary search tree
-    // bst.printTree();
-
-    // for (int i = 0; i < LINE_COUNT; i++)
-    // {
-    //     bst.insert(lines[i]);
-    //     if (lineIsVerticle(lines[i]))
-    //     {
-    //         cout << "Verticle" << endl;
-    //     }
-    //     else
-    //     {
-    //         cout << "Horizontal" << endl;
-    //     }
-    // }
-    // bst.printTree();
-
-    // cout << "Smallest node: " << bst.chooseSmallestNode()->data.p1.y << endl;
-
-    // bst.remove(lines[3]);
-    // bst.printTree();
-    // bst.remove(lines[1]);
-    // bst.printTree();
-    // bst.remove(lines[5]);
-    // bst.printTree();
+    bst.printTree();
+    bst.printIntersections();
 }
 
 bool compareMethod(point a, point b)
@@ -692,24 +643,8 @@ bool compareMethod(point a, point b)
     return false;
 };
 
-int compare(const void *a, const void *b)
-{
-    const line *line1 = (line *)a;
-    const line *line2 = (line *)b;
-
-    if (line1->p1.x > line2->p1.x)
-    {
-        return 1;
-    }
-    else if (line1->p1.x < line2->p1.x)
-    {
-        return -1;
-    }
-    return 0;
-};
-
-bool lineIsVerticle(line a)
 /* Tell us if the line his Horizontal or Verticle */
+bool lineIsVerticle(line a)
 {
     // If the line has same X-axis -> Verticle
     if (a.p1.x == a.p2.x)
@@ -718,13 +653,4 @@ bool lineIsVerticle(line a)
     }
     // Otherwise -> Horizontal
     return false;
-}
-
-void displayLines(line arr[])
-{
-    for (int i = 0; i < LINE_COUNT; i++)
-    {
-        cout << "Line #" << i << ":";
-        cout << "(" << arr[i].p1.x << ", " << arr[i].p1.y << ")" << endl;
-    }
 }
