@@ -30,7 +30,8 @@ private:
         node *left;
         node *right;
     };
-    node *rootPointer; // Our root node
+    node *rootPointer;         // Our root node
+    int intersectionCount = 0; // Amount of intersections we find
 
     /* Check if the tree is empty */
     bool treeIsEmpty()
@@ -414,6 +415,41 @@ private:
             }
         }
     }
+    /* Select the node that is the farthest to the left*/
+    node *chooseSmallestNode()
+    {
+        return chooseSmallestNodeWithRecursion(rootPointer);
+    }
+
+    void rangeSearchWithRecursion(node *nodePointer, int leftBound, int rightBound)
+    {
+        // If we hit the bottom of the tree
+        if (!nodeExists(nodePointer))
+        {
+            return;
+        }
+
+        // If we've found a node within the range
+        if (nodePointer->data.p1.y >= leftBound && nodePointer->data.p1.y <= rightBound)
+        {
+            // Increment no. of intersections
+            intersectionCount += 1;
+        }
+
+        // If we're still within the left bound keep searching left nodes
+        // (don't bother searching left nodes if they're less than it)
+        if (nodePointer->data.p1.y > leftBound)
+        {
+            rangeSearchWithRecursion(nodePointer->left, leftBound, rightBound);
+        }
+
+        // If we're still within the right bound keep searching right nodes
+        // (don't bother searching right nodes if we're above it)
+        if (nodePointer->data.p1.y < rightBound)
+        {
+            rangeSearchWithRecursion(nodePointer->right, leftBound, rightBound);
+        }
+    }
 
 public:
     binarySearchTree()
@@ -444,40 +480,16 @@ public:
         cout << endl;
     }
 
-    /* Select the node that is the farthest to the left*/
-    node *chooseSmallestNode()
+    /* Print number of intersections */
+    void printIntersections()
     {
-        return chooseSmallestNodeWithRecursion(rootPointer);
+        cout << "No. of intersections: " << intersectionCount << endl;
     }
 
     /* Find nodes within Y range*/
     void rangeSearch(int lowY, int highY)
     {
         rangeSearchWithRecursion(rootPointer, lowY, highY);
-    }
-
-    void rangeSearchWithRecursion(node *nodePointer, int lowY, int highY)
-    {
-        if (!nodeExists(nodePointer))
-        {
-            return;
-        }
-
-        if (nodePointer->data.p1.y > lowY && nodeExists(nodePointer->left))
-        {
-            rangeSearchWithRecursion(nodePointer->left, lowY, highY);
-        }
-
-        if (nodePointer->data.p1.y >= lowY && nodePointer->data.p1.y <= highY)
-        {
-            cout << "Found one!" << endl;
-            // count = count + 1;
-        }
-
-        if (nodePointer->data.p1.y < highY && nodeExists(nodePointer->right))
-        {
-            rangeSearchWithRecursion(nodePointer->right, lowY, highY);
-        }
     }
 };
 
@@ -600,7 +612,8 @@ main()
     bst.insert(lines[6]);
     bst.insert(lines[7]);
     bst.printTree();
-    bst.rangeSearch(3, 10);
+    bst.rangeSearch(3, 4);
+    bst.printIntersections();
     /*
     // Sweep over the points
     for (int i = 0; i < pointsPQ.size(); i++)
