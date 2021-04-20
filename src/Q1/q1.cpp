@@ -4,16 +4,21 @@
 // We have N lines, they are only vertical or horizontal.
 // Derive the efficency of our algorithm.
 #include <iostream>
+#include <vector>
+#include <algorithm>
 using namespace std;
 #define LINE_COUNT 8
 
 struct point
 {
     int x, y;
+    int parentLineId;
+    bool isFirstPoint = true;
 };
 struct line
 {
     point p1, p2;
+    int id;
 };
 
 class binarySearchTree
@@ -444,9 +449,40 @@ public:
     {
         return chooseSmallestNodeWithRecursion(rootPointer);
     }
+
+    /* Find nodes within Y range*/
+    void rangeSearch(int lowY, int highY)
+    {
+        rangeSearchWithRecursion(rootPointer, lowY, highY);
+    }
+
+    void rangeSearchWithRecursion(node *nodePointer, int lowY, int highY)
+    {
+        if (!nodeExists(nodePointer))
+        {
+            return;
+        }
+
+        if (nodePointer->data.p1.y > lowY && nodeExists(nodePointer->left))
+        {
+            rangeSearchWithRecursion(nodePointer->left, lowY, highY);
+        }
+
+        if (nodePointer->data.p1.y >= lowY && nodePointer->data.p1.y <= highY)
+        {
+            cout << "Found one!" << endl;
+            // count = count + 1;
+        }
+
+        if (nodePointer->data.p1.y < highY && nodeExists(nodePointer->right))
+        {
+            rangeSearchWithRecursion(nodePointer->right, lowY, highY);
+        }
+    }
 };
 
 int compare(const void *, const void *);
+bool compareMethod(point, point);
 bool lineIsVerticle(line);
 void displayLines(line[]);
 
@@ -455,80 +491,193 @@ main()
     // Initialise lines
     line lines[LINE_COUNT];
     // L1
+    lines[0].id = 0;
+    lines[0].p1.parentLineId = 0;
+    lines[0].p2.parentLineId = 0;
+    lines[0].p2.isFirstPoint = false;
     lines[0].p1.x = 1;
     lines[0].p1.y = 1;
     lines[0].p2.x = 7;
     lines[0].p2.y = 1;
     // L2
+    lines[1].id = 1;
+    lines[1].p1.parentLineId = 1;
+    lines[1].p2.parentLineId = 1;
+    lines[1].p2.isFirstPoint = false;
     lines[1].p1.x = 2;
     lines[1].p1.y = 3;
     lines[1].p2.x = 4;
     lines[1].p2.y = 3;
     // L3
+    lines[2].id = 2;
+    lines[2].p1.parentLineId = 2;
+    lines[2].p2.parentLineId = 2;
+    lines[2].p2.isFirstPoint = false;
     lines[2].p1.x = 3;
     lines[2].p1.y = 4;
     lines[2].p2.x = 8;
     lines[2].p2.y = 4;
     // L4
+    lines[3].id = 3;
+    lines[3].p1.parentLineId = 3;
+    lines[3].p2.parentLineId = 3;
+    lines[3].p2.isFirstPoint = false;
     lines[3].p1.x = 5;
     lines[3].p1.y = 6;
     lines[3].p2.x = 5;
     lines[3].p2.y = 3;
     // L5
+    lines[4].id = 4;
+    lines[4].p1.parentLineId = 4;
+    lines[4].p2.parentLineId = 4;
+    lines[4].p2.isFirstPoint = false;
     lines[4].p1.x = 6;
     lines[4].p1.y = 2;
     lines[4].p2.x = 6;
     lines[4].p2.y = 0;
     // L6
+    lines[5].id = 5;
+    lines[5].p1.parentLineId = 5;
+    lines[5].p2.parentLineId = 5;
+    lines[5].p2.isFirstPoint = false;
     lines[5].p1.x = 7;
     lines[5].p1.y = 5;
     lines[5].p2.x = 7;
     lines[5].p2.y = 3;
     // L7
+    lines[6].id = 6;
+    lines[6].p1.parentLineId = 6;
+    lines[6].p2.parentLineId = 6;
+    lines[6].p2.isFirstPoint = false;
     lines[6].p1.x = 10;
     lines[6].p1.y = 6;
     lines[6].p2.x = 10;
     lines[6].p2.y = 1;
     // L8
+    lines[7].id = 7;
+    lines[7].p1.parentLineId = 7;
+    lines[7].p2.parentLineId = 7;
+    lines[7].p2.isFirstPoint = false;
     lines[7].p1.x = 11;
     lines[7].p1.y = 3;
     lines[7].p2.x = 12;
     lines[7].p2.y = 3;
 
-    // 1. Sort the lines based on the X-coordinate
-    // N log N (apparently)
-    displayLines(lines);
-    qsort(lines, LINE_COUNT, sizeof(line), compare);
-    cout << "* QUICK SORT *" << endl;
-    displayLines(lines);
+    // Our priority queue of points
+    vector<point> pointsPQ;
 
-    // 2. Binary search tree
+    // Our binary search tree
     binarySearchTree bst;
-    bst.printTree();
 
+    // Filling our priority queue with points:
     for (int i = 0; i < LINE_COUNT; i++)
     {
-        bst.insert(lines[i]);
-        if (lineIsVerticle(lines[i]))
+        // Inserting the two points of each line
+        pointsPQ.insert(pointsPQ.end(), lines[i].p1);
+        // If the line is verticle just add a single point
+        // (since the x position would be the same)
+        if (!lineIsVerticle(lines[i]))
         {
-            cout << "Verticle" << endl;
-        }
-        else
-        {
-            cout << "Horizontal" << endl;
+            pointsPQ.insert(pointsPQ.end(), lines[i].p2);
         }
     }
-    bst.printTree();
+    cout << "Points: ";
+    for (int i = 0; i < pointsPQ.size(); i++)
+    {
+        cout << pointsPQ[i].x << ", ";
+    }
+    cout << endl;
+    // According to c++ reference, it's O(N log N)
+    // (https://www.cplusplus.com/reference/algorithm/stable_sort/)
+    stable_sort(pointsPQ.begin(), pointsPQ.end(), compareMethod);
 
-    cout << "Smallest node: " << bst.chooseSmallestNode()->data.p1.y << endl;
+    bst.insert(lines[0]);
+    bst.insert(lines[1]);
+    bst.insert(lines[2]);
+    bst.insert(lines[3]);
+    bst.insert(lines[4]);
+    bst.insert(lines[5]);
+    bst.insert(lines[6]);
+    bst.insert(lines[7]);
+    bst.printTree();
+    bst.rangeSearch(3, 10);
+    /*
+    // Sweep over the points
+    for (int i = 0; i < pointsPQ.size(); i++)
+    {
+        // If we hit a verticle line
+        if (lineIsVerticle(lines[pointsPQ[i].parentLineId]))
+        {
+            // Do a range search
+            // from the lines p1.y -> p2.y
+            // check if there are any BST values that fall into that.
+            // (the values that do are intersection lines!)
+            // number of intersections++
+        }
 
-    bst.remove(lines[3]);
-    bst.printTree();
-    bst.remove(lines[1]);
-    bst.printTree();
-    bst.remove(lines[5]);
-    bst.printTree();
+        // If it's the first point of the line
+        else if (pointsPQ[i].isFirstPoint)
+        {
+            // Insert it's line into our BST
+            bst.insert(lines[pointsPQ[i].parentLineId]);
+            bst.printTree();
+        }
+        // If it's the end point of the line
+        else
+        {
+            // Remove the line from our BST
+            bst.remove(lines[pointsPQ[i].parentLineId]);
+        }
+    }
+    */
+    // bst.rangeSearch(1, 3);
+
+    // cout << "RANGE SEARCH: " << bst.rangeSearch(1, 3) << endl;
+
+    // ----
+
+    // // 1. Sort the lines based on the X-coordinate
+    // // N log N (apparently)
+    // displayLines(lines);
+    // qsort(lines, LINE_COUNT, sizeof(line), compare);
+    // cout << "* QUICK SORT *" << endl;
+    // displayLines(lines);
+
+    // // 2. Binary search tree
+    // bst.printTree();
+
+    // for (int i = 0; i < LINE_COUNT; i++)
+    // {
+    //     bst.insert(lines[i]);
+    //     if (lineIsVerticle(lines[i]))
+    //     {
+    //         cout << "Verticle" << endl;
+    //     }
+    //     else
+    //     {
+    //         cout << "Horizontal" << endl;
+    //     }
+    // }
+    // bst.printTree();
+
+    // cout << "Smallest node: " << bst.chooseSmallestNode()->data.p1.y << endl;
+
+    // bst.remove(lines[3]);
+    // bst.printTree();
+    // bst.remove(lines[1]);
+    // bst.printTree();
+    // bst.remove(lines[5]);
+    // bst.printTree();
 }
+
+bool compareMethod(point a, point b)
+{
+    if (a.x < b.x)
+    {
+        return true;
+    }
+    return false;
+};
 
 int compare(const void *a, const void *b)
 {
