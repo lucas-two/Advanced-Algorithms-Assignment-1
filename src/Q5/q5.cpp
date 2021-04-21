@@ -3,25 +3,41 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <fstream>
 using namespace std;
 
-void printQueue(vector<string> q);
+// void printQueue(vector<string> q);
 
 main()
 {
-    vector<string> dict = {"hot",
-                           "dog",
-                           "dot",
-                           "lot",
-                           "log",
-                           "cog",
-                           "dress",
-                           "impress",
-                           "me"}; // All our words
-    vector<string> wordList;      // All words from dict that are equal length to source/end word
+    string sourceWord = "char";
+    string endWord = "suer";
 
-    string sourceWord = "hit"; // The word we're going from
-    string endWord = "cog";    // The word we're going to
+    // Input the dictionary
+    vector<string> dict;
+    ifstream inputFile("dictionary.txt");
+    if (inputFile.fail())
+    {
+        cout << "[!] COULD NOT READ FILE" << endl;
+    }
+    else
+    {
+        string s;
+        while (getline(inputFile, s))
+        {
+            dict.insert(dict.end(), s);
+        }
+        inputFile.close();
+    }
+
+    vector<string> wordList; // All words from dict that are equal length to source/end word
+
+    // Check source and end words are same length
+    if (sourceWord.length() != endWord.length())
+    {
+        cout << "[!] Source and end word must have same length." << endl;
+        return -1;
+    }
 
     char letters[26] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
 
@@ -45,30 +61,17 @@ main()
     if (!endWordExists)
     {
         cout << "[!] End word `" << endWord << "` does not exist." << endl;
-        exit(1);
+        return -1;
     }
-
-    for (int i = 0; i < wordList.size(); i++)
-    {
-        cout << wordList[i] << "  ";
-    }
-    cout << endl;
     vector<string> queue = {sourceWord};
     int steps = 0; // Number of word changes between each word
     int toExploreCurrent = 1;
     int toExploreNext = 0;
     while (queue.size() != 0)
     {
-        printQueue(queue);
         // Pop the head of the queue
         string word = queue[0];
         queue.erase(queue.begin());
-
-        cout << "WORD: " << word << endl;
-        cout << "STEPS: " << steps << endl;
-        cout << "CURRENT TO EXPLORE: " << toExploreCurrent << endl;
-        cout << "NEXT TO EXPLORE: " << toExploreNext << endl;
-
         for (int i = 0; i < word.length(); i++)
         {
             for (int j = 0; j < 26; j++)
@@ -88,12 +91,10 @@ main()
                     // If we have a match
                     if (newWord == wordList[k])
                     {
-                        cout << "[match found]: " << wordList[k] << endl;
                         // If the word is our end word
                         if (newWord == endWord)
                         {
                             // Return the amount of steps taken to get to thes word
-                            cout << endl;
                             cout << "End word found in " << steps + 1 << " steps." << endl;
                             return steps + 1;
                         }
@@ -102,27 +103,9 @@ main()
                         {
                             // Increment how many words we need to process on the next level
                             toExploreNext += 1;
-                            cout << "NEXT TO EXPLORE++: " << toExploreNext << endl;
-
-                            cout << "-----------------" << endl;
                             queue.insert(queue.end(), newWord);
-
-                            for (int i = 0; i < wordList.size(); i++)
-                            {
-                                cout << wordList[i] << "  ";
-                            }
-                            cout << endl;
-
-                            cout << "*Removing: " << wordList[k] << "*" << endl;
                             // Remove the new word from the word list
                             wordList.erase(wordList.begin() + k);
-
-                            for (int i = 0; i < wordList.size(); i++)
-                            {
-                                cout << wordList[i] << "  ";
-                            }
-                            cout << endl;
-                            cout << "-----------------" << endl;
                         }
                     }
                 }
@@ -141,18 +124,16 @@ main()
             toExploreNext = 0;
         }
     }
-
-    cout << endl;
     cout << "Cannot reach end node." << endl;
     return -1;
 }
 
-void printQueue(vector<string> q)
-{
-    cout << "QUEUE: " << endl;
-    for (int i = 0; i < q.size(); i++)
-    {
-        cout << "[" << i << "]: " << q[i] << endl;
-    }
-    cout << endl;
-}
+// void printQueue(vector<string> q)
+// {
+//     cout << "QUEUE: " << endl;
+//     for (int i = 0; i < q.size(); i++)
+//     {
+//         cout << "[" << i << "]: " << q[i] << endl;
+//     }
+//     cout << endl;
+// }
