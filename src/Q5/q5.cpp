@@ -50,18 +50,21 @@ main()
     {
         cout << wordList[i] << "  ";
     }
+    cout << endl;
     vector<string> queue = {sourceWord};
-    int steps = 0;        // Number of word changes between each word
-    int wordsAtLevel = 0; // Amount of words at a given level
-
-    steps += 1;
-    wordsAtLevel += 1;
-
+    int steps = 0; // Number of word changes between each word
+    int toExploreCurrent = 1;
+    int toExploreNext = 0;
     while (queue.size() != 0)
     {
         // Pop the head of the queue
         string word = queue[queue.size() - 1];
         queue.pop_back();
+
+        cout << "WORD: " << word << endl;
+        cout << "STEPS: " << steps << endl;
+        cout << "CURRENT TO EXPLORE: " << toExploreCurrent << endl;
+        cout << "NEXT TO EXPLORE: " << toExploreNext << endl;
 
         for (int i = 0; i < word.length(); i++)
         {
@@ -87,11 +90,16 @@ main()
                         if (newWord == endWord)
                         {
                             // Return the amount of steps taken to get to thes word
-                            return steps;
+                            cout << "FOUND WORD" << endl;
+                            return steps + 1;
                         }
                         // Otherwise add the new word to the queue
                         else
                         {
+                            // Increment how many words we need to process on the next level
+                            toExploreNext += 1;
+                            cout << "NEXT TO EXPLORE++: " << toExploreNext << endl;
+
                             cout << "-----------------" << endl;
                             queue.insert(queue.end(), newWord);
 
@@ -101,7 +109,7 @@ main()
                             }
                             cout << endl;
 
-                            cout << "Removing" << wordList[k] << endl;
+                            cout << "*Removing: " << wordList[k] << "*" << endl;
                             // Remove the new word from the word list
                             wordList.erase(wordList.begin() + k);
 
@@ -116,8 +124,17 @@ main()
                 }
             }
         }
+        // Word has been processed
+        toExploreCurrent -= 1;
+        // If we've processed all the words on this level
+        if (toExploreCurrent == 0)
+        {
+            // We're onto words a step forward
+            steps += 1;
+            // Update the current to explore with the found next to explore
+            toExploreCurrent = toExploreNext;
+            // Reset the to explore next
+            toExploreNext = 0;
+        }
     }
-
-    // Using BFS
-    // https://www.youtube.com/watch?v=ZVJ3asMoZ18
 }
