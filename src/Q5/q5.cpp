@@ -5,6 +5,8 @@
 #include <vector>
 using namespace std;
 
+void printQueue(vector<string> q);
+
 main()
 {
     vector<string> dict = {"hot",
@@ -57,9 +59,10 @@ main()
     int toExploreNext = 0;
     while (queue.size() != 0)
     {
+        printQueue(queue);
         // Pop the head of the queue
-        string word = queue[queue.size() - 1];
-        queue.pop_back();
+        string word = queue[0];
+        queue.erase(queue.begin());
 
         cout << "WORD: " << word << endl;
         cout << "STEPS: " << steps << endl;
@@ -137,4 +140,14 @@ main()
             toExploreNext = 0;
         }
     }
+}
+
+void printQueue(vector<string> q)
+{
+    cout << "QUEUE: " << endl;
+    for (int i = 0; i < q.size(); i++)
+    {
+        cout << "[" << i << "]: " << q[i] << endl;
+    }
+    cout << endl;
 }
