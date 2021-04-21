@@ -93,7 +93,8 @@ main()
                         if (newWord == endWord)
                         {
                             // Return the amount of steps taken to get to thes word
-                            cout << "FOUND WORD" << endl;
+                            cout << endl;
+                            cout << "End word found in " << steps + 1 << " steps." << endl;
                             return steps + 1;
                         }
                         // Otherwise add the new word to the queue
@@ -140,6 +141,10 @@ main()
             toExploreNext = 0;
         }
     }
+
+    cout << endl;
+    cout << "Cannot reach end node." << endl;
+    return -1;
 }
 
 void printQueue(vector<string> q)
