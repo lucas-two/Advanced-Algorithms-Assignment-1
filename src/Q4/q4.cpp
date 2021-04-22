@@ -164,7 +164,6 @@ int main()
 {
     myStructure a({1, 4, 3, 9}, 10);
     a.print();
-
     a.add(5);
     a.print();
     a.add(11);
@@ -172,20 +171,15 @@ int main()
     a.add(5);
     a.add(8);
     a.print();
-
     a.remove(8);
     a.print();
     a.remove(8);
     a.remove(4);
     a.print();
-
     a.exists(8);
     a.exists(5);
-
     a.iterate();
-
     a.clear();
-
     a.print();
     return 0;
 }
