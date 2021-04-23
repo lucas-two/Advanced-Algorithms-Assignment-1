@@ -1,10 +1,12 @@
+/* Q6. Word Sequence Algorithm */
+
 #include <iostream>
-#include <string>
 #include <vector>
 #include <fstream>
 using namespace std;
 
-void findSequence(vector<string>);
+int findSequence(vector<string>, int);
+int findBestSequence(vector<string>);
 
 int main()
 {
@@ -84,46 +86,49 @@ int main()
         }
     }
     // Displaying amount of sequences
-    cout << "[Word Length 4]: ";
-    findSequence(wordsLengthFour);
-    cout << "[Word Length 5]: ";
-    findSequence(wordsLengthFive);
-    cout << "[Word Length 6]: ";
-    findSequence(wordsLengthSix);
-    cout << "[Word Length 7]: ";
-    findSequence(wordsLengthSeven);
-    cout << "[Word Length 8]: ";
-    findSequence(wordsLengthEight);
-    cout << "[Word Length 9]: ";
-    findSequence(wordsLengthNine);
-    cout << "[Word Length 10]: ";
-    findSequence(wordsLengthTen);
-    cout << "[Word Length 11]: ";
-    findSequence(wordsLengthEleven);
-    cout << "[Word Length 12]: ";
-    findSequence(wordsLengthTwelve);
-    cout << "[Word Length 13]: ";
-    findSequence(wordsLengthThirteen);
-    cout << "[Word Length 14]: ";
-    findSequence(wordsLengthFourteen);
-    cout << "[Word Length 15]: ";
-    findSequence(wordsLengthFifteen);
+    cout << "[Word Length 4]: " << findBestSequence(wordsLengthFour) << endl;
+    cout << "[Word Length 5]: " << findBestSequence(wordsLengthFive) << endl;
+    cout << "[Word Length 6]: " << findBestSequence(wordsLengthSix) << endl;
+    cout << "[Word Length 7]: " << findBestSequence(wordsLengthSeven) << endl;
+    cout << "[Word Length 8]: " << findBestSequence(wordsLengthEight) << endl;
+    cout << "[Word Length 9]: " << findBestSequence(wordsLengthNine) << endl;
+    cout << "[Word Length 10]: " << findBestSequence(wordsLengthTen) << endl;
+    cout << "[Word Length 11]: " << findBestSequence(wordsLengthEleven) << endl;
+    cout << "[Word Length 12]: " << findBestSequence(wordsLengthTwelve) << endl;
+    cout << "[Word Length 13]: " << findBestSequence(wordsLengthThirteen) << endl;
+    cout << "[Word Length 14]: " << findBestSequence(wordsLengthFourteen) << endl;
+    cout << "[Word Length 15]: " << findBestSequence(wordsLengthFifteen) << endl;
 }
 
-void findSequence(vector<string> wordsLength)
+/* Finds the best sequence out of all possible sequences */
+int findBestSequence(vector<string> wordsLength)
 {
-    // Sequence Queue initialised with the first word in the list
-    vector<string> sequenceQueue = {wordsLength[0]};
-    // Remove first word from the list
-    wordsLength.erase(wordsLength.begin());
+    int bestSequenceScore = 0;
+    for (int i = 0; i < wordsLength.size(); i++)
+    {
+        int sequenceScore = findSequence(wordsLength, i);
+        if (sequenceScore > bestSequenceScore)
+        {
+            bestSequenceScore = sequenceScore;
+        }
+    }
+    return bestSequenceScore;
+}
+
+/* Finds a given sequence */
+int findSequence(vector<string> wordsLength, int startWordIndex)
+{
+    // Sequence Queue initialised with the start word from the list
+    vector<string> sequenceQueue = {wordsLength[startWordIndex]};
+    // Remove start word from the list
+    wordsLength.erase(wordsLength.begin() + startWordIndex);
+    // Track how many sequences are found
     int sequenceCount = 0;
-    // While we have words...
     while (1)
     {
         // Look at the current word in the sequence
         string parentWord = sequenceQueue[sequenceCount];
         int nextSequenceFound = false;
-
         // For each word...
         for (int i = 0; i < wordsLength.size(); i++)
         {
@@ -141,10 +146,10 @@ void findSequence(vector<string> wordsLength)
                 break;
             }
         }
+        // If there are no more sequences found
         if (!nextSequenceFound)
         {
-            cout << sequenceCount + 1 << " sequences" << endl;
-            break;
+            return sequenceCount + 1;
         }
     }
 }
