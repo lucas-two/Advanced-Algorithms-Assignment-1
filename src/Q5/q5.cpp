@@ -10,8 +10,8 @@ using namespace std;
 
 main()
 {
-    string sourceWord = "char";
-    string endWord = "suer";
+    string sourceWord = "toolbox";
+    string endWord = "topcoat";
 
     // Input the dictionary
     vector<string> dict;
@@ -124,7 +124,7 @@ main()
             toExploreNext = 0;
         }
     }
-    cout << "Cannot reach end node." << endl;
+    cout << "Cannot reach end word." << endl;
     return -1;
 }
 

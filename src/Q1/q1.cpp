@@ -146,46 +146,6 @@ private:
         }
     }
 
-    node *findNodeWithRecursion(line data, node *nodePointer)
-    {
-        // If our node pointer is pointing to something:
-        if (nodeExists(nodePointer))
-        {
-            // If the values are equal:
-            if (nodePointer->data.p1.y == data.p1.y)
-            {
-                // Return this as our node
-                return nodePointer;
-            }
-            // Otherwise, recursively look for it...
-            else
-            {
-                // In the LEFT (if the value is less than)
-                if (data.p1.y < nodePointer->data.p1.y)
-                {
-                    return findNodeWithRecursion(data, nodePointer->left);
-                }
-                // In the RIGHT (if the value is greater than)
-                else
-                {
-                    return findNodeWithRecursion(data, nodePointer->right);
-                }
-            }
-        }
-        // If our node pointer isn't pointing to anything -> NULL
-        else
-        {
-            return NULL;
-        }
-    }
-
-    /* Locates a node in the tree */
-    void findNode(line data)
-    {
-        // Finds a node in the tree using a recursive method:
-        findNodeWithRecursion(data, rootPointer);
-    }
-
     void removeWithRecursion(line data, node *nodePointer)
     {
         if (!treeIsEmpty())
