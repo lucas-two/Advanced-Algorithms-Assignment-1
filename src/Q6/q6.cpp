@@ -1,6 +1,7 @@
 /* Q6. Word Sequence Algorithm */
 
 #include <iostream>
+#include <string>
 #include <vector>
 #include <fstream>
 using namespace std;
